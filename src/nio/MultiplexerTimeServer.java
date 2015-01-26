@@ -34,8 +34,10 @@ import java.util.Set;
 public class MultiplexerTimeServer implements Runnable {
 
 	private Selector selector;
+	private Selector selector2;
 
 	private ServerSocketChannel servChannel;
+	private ServerSocketChannel servChannel2;
 
 	private volatile boolean stop;
 
@@ -47,10 +49,17 @@ public class MultiplexerTimeServer implements Runnable {
 	public MultiplexerTimeServer(int port) {
 		try {
 			selector = SelectorProvider.provider().openSelector();
+			selector2 = SelectorProvider.provider().openSelector();
 			servChannel = ServerSocketChannel.open();
 			servChannel.configureBlocking(false);
 			servChannel.socket().bind(new InetSocketAddress(port), 1024);
 			servChannel.register(selector, SelectionKey.OP_ACCEPT);
+			servChannel.register(selector2, SelectionKey.OP_ACCEPT);
+
+			// servChannel2 = ServerSocketChannel.open();
+			// servChannel2.configureBlocking(false);
+			// servChannel2.socket().bind(new InetSocketAddress(8081), 1024);
+			// servChannel2.register(selector, SelectionKey.OP_ACCEPT);
 			System.out.println("The time server is start in port : " + port);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -69,9 +78,37 @@ public class MultiplexerTimeServer implements Runnable {
 	 */
 	@Override
 	public void run() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (!stop) {
+					try {
+						selector2.select();
+						Set<SelectionKey> selectedKeys = selector2.selectedKeys();
+						Iterator<SelectionKey> it = selectedKeys.iterator();
+						SelectionKey key = null;
+						while (it.hasNext()) {
+							key = it.next();
+							it.remove();
+							try {
+								handleInput(key);
+							} catch (Exception e) {
+								if (key != null) {
+									key.cancel();
+									if (key.channel() != null)
+										key.channel().close();
+								}
+							}
+						}
+					} catch (Throwable t) {
+						t.printStackTrace();
+					}
+				}
+			}
+		}).start();
 		while (!stop) {
 			try {
-				selector.select(1000);
+				selector.select();
 				Set<SelectionKey> selectedKeys = selector.selectedKeys();
 				Iterator<SelectionKey> it = selectedKeys.iterator();
 				SelectionKey key = null;

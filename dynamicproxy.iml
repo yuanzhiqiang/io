@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$USER_HOME$/git/selfdynamicptoxy/bin" />
+    <exclude-output />
+    <content url="file://$USER_HOME$/git/selfdynamicptoxy">
+      <sourceFolder url="file://$USER_HOME$/git/selfdynamicptoxy/src" isTestSource="false" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="inheritedJdk" />
+  </component>
+</module>
+

@@ -7,7 +7,6 @@ import java.net.ServerSocket;
 
 public class FileDescriptorTest {
 
-	
 	public static void main(String[] args) throws Exception {
 //		FileDescriptor fd = FileDescriptor.out;
 //		FileOutputStream fos = new FileOutputStream(fd);
